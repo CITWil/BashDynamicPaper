@@ -14,10 +14,12 @@ get_weather () {
 
     if jq -e . >/dev/null 2>&1 <<< "$weatherdata"; then
         temp=$(echo "$weatherdata" | jq -r '.current_condition[0].temp_F' )
+		rm ~/Pictures/Paper/weather/weather_report.png
         w_type=$(echo "$weatherdata" | jq -r '.current_condition[0].weatherDesc[0].value')
         sunrise=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunrise' | tr -d ":AM[:space:]" | sed 's/^0//')
         sunset=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunset'| tr -d ":PM[:space:]" | sed 's/^0//')
         sunset=$((sunset + 1200))
+		convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% ~/Pictures/Paper/weather/weather_report.png
     else
         echo "wttr.in failure, using previous weather."
         wttr_fail=1
@@ -63,6 +65,7 @@ set_pape () {
     # if ! pape=$(find "$pape_prefix"/"$t_type"/"$w_type"/* "$pape_prefix"/"$t_type"/Misc/* | shuf -n 1); then
     if ! pape=$(find "$pape_prefix"/"$t_type"/"$w_type"/* | shuf -n 1); then
         pape=$(find "$pape_prefix"/"$t_type"/* | shuf -n 1)
+		echo $pape
     fi
 
     if [[ $embed -eq 1 ]]; then
@@ -76,6 +79,7 @@ set_pape () {
         echo "Res: $res"
         convert "$pape" -resize "$res" resized_pape.png
         pape="resized_pape.png"
+		echo $pape
 
         rm embed_pape_*
         convert <( curl -s "wttr.in/_tqp0.png" ) weather_report.png
@@ -88,6 +92,7 @@ set_pape () {
     fi
 
     pape=$(realpath $pape)
+	echo $pape
 
     if which osascript; then
         rm ~/Pictures/Weather\ Wallpaper/*
@@ -105,7 +110,8 @@ set_pape () {
             	gsettings set org.gnome.desktop.background picture-uri "file://$pape"
 		;;
 	    *)
-                feh --randomize --bg-fill "$pape"
+                feh --randomize --bg-fill "$pape" #background
+				#kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "$pape" #for SDDM lock screen
                 ;;
         esac
 
@@ -123,8 +129,8 @@ set_pape () {
         fi
     fi
 
-    rm weather_report.png
-    rm resized_pape.png
+    #rm weather_report.png #moved to Weather retrieval and saves the last one for troubleshooting 
+    #rm resized_pape.png  #Moved to embeded where it is used
     #rm "$stamped_pape"
     rm /tmp/prev_weather.dat
     echo "$w_type" >> /tmp/prev_weather.dat
