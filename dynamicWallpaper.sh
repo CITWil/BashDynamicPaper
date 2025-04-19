@@ -14,12 +14,12 @@ get_weather () {
 
     if jq -e . >/dev/null 2>&1 <<< "$weatherdata"; then
         temp=$(echo "$weatherdata" | jq -r '.current_condition[0].temp_F' )
-		rm ~/Pictures/Paper/weather/weather_report.png
+		rm "$pape_prefix/weather/weather_report.png"
         w_type=$(echo "$weatherdata" | jq -r '.current_condition[0].weatherDesc[0].value')
         sunrise=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunrise' | tr -d ":AM[:space:]" | sed 's/^0//')
         sunset=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunset'| tr -d ":PM[:space:]" | sed 's/^0//')
         sunset=$((sunset + 1200))
-		convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% ~/Pictures/Paper/weather/weather_report.png
+		magick convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% "$pape_prefix/weather/weather_report.png"
     else
         echo "wttr.in failure, using previous weather."
         wttr_fail=1
@@ -65,7 +65,7 @@ set_pape () {
     # if ! pape=$(find "$pape_prefix"/"$t_type"/"$w_type"/* "$pape_prefix"/"$t_type"/Misc/* | shuf -n 1); then
     if ! pape=$(find "$pape_prefix"/"$t_type"/"$w_type"/* | shuf -n 1); then
         pape=$(find "$pape_prefix"/"$t_type"/* | shuf -n 1)
-		echo $pape
+		echo "$pape"
     fi
 
     if [[ $embed -eq 1 ]]; then
@@ -77,22 +77,22 @@ set_pape () {
         fi
 
         echo "Res: $res"
-        convert "$pape" -resize "$res" resized_pape.png
+        magick convert "$pape" -resize "$res" resized_pape.png
         pape="resized_pape.png"
 		echo $pape
 
         rm embed_pape_*
-        convert <( curl -s "wttr.in/_tqp0.png" ) weather_report.png
-        convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "embed_pape.png"
+        magick convert <( curl -s "wttr.in/_tqp0.png" ) weather_report.png
+        magick convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "embed_pape.png"
         stamped_pape="embed_pape_$(date +%T).png"
         cp embed_pape.png "$stamped_pape"
-        convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% weather_report.png
-        convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "$stamped_pape"
+        magick convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% weather_report.png
+        magick convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "$stamped_pape"
         pape="$stamped_pape"
     fi
 
-    pape=$(realpath $pape)
-	echo $pape
+    pape=$(realpath "$pape")
+	echo "$pape"
 
     if which osascript; then
         rm ~/Pictures/Weather\ Wallpaper/*
@@ -110,8 +110,12 @@ set_pape () {
             	gsettings set org.gnome.desktop.background picture-uri "file://$pape"
 		;;
 	    *)
-                feh --randomize --bg-fill "$pape" #background
-				#kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "$pape" #for Plasma6 SDDM lock screen
+                if [[ $wp -eq 1 ]]; then
+                    feh --randomize --bg-fill "$pape" #background
+                fi
+                if [[ $lockscreen -eq 1 ]]; then
+				    kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "$pape" #for Plasma6 SDDM lock screen
+                fi
                 ;;
         esac
 
@@ -140,15 +144,20 @@ set_pape () {
 exit_help () {
     echo "ERROR: $1"
     echo "USAGE: dynamicWallpaper -p [PAPER_PREFIX] -w [AIRPORT_CALLSIGN]"
+    printf "NOTE: Default usage is to just update the Wallpaper\n"
     printf "\t-p: The prefix of your wallpaper folder without a trailing /\n"
     printf "\t-e: Embed a little weather preview png in the wallpaper\n"
     printf "\t--wal: Use pywal if it's installed\n"
+    printf "\t-l: Just update Plasma 6 Lockscreen\n"
+    printf "\t-a: Update both Wallpaper and Lockscreen\n"
     exit 1
 }
 
 pape_prefix="0"
 use_wal=0
 embed=0
+lockscreen=0
+wp=1
 wttr_fail=0
 
 while [[ $# -gt 0 ]]; do
@@ -165,6 +174,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         -e)
             embed=1
+            shift;
+            ;;
+        -l)
+            lockscreen=1
+            wp=0
+            echo "Lockscreen"
+            shift;
+            ;;
+        -a)
+            wp=1
+            lockscreen=1
+            echo "All of the Above"
             shift;
             ;;
         *)

@@ -1,4 +1,5 @@
 # BashDynamicPaper
+
 Dynamic wallpaper setter written in bash that works on Linux and MacOS. Using all of the features, it 
 will change your wallpaper based both on the time of day and the weather. The time of day is divided 
 into four categories: morning, day, evening, and night. A sunrise/sunset api is used, which means that
@@ -11,6 +12,10 @@ want to use the embed feature, you will also need [imagemagick](https://imagemag
 also play nicely with [pywal](https://github.com/dylanaraps/pywal) should you want
  to change your themes w/r/t the wallpaper. Right now it uses [wttr.in]()'s ability
 to get the location via IP so if you're using a VPN it might not play nicely.
+
+### Note this is a fork all references are from [wtheisen](https://github.com/wtheisen/BashDynamicPaper)
+Just working on adding support for Plasma 6 lockscreen.
+
 
 ### Example
 
