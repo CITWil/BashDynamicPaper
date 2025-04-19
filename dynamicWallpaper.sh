@@ -111,7 +111,7 @@ set_pape () {
 		;;
 	    *)
                 feh --randomize --bg-fill "$pape" #background
-				#kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "$pape" #for SDDM lock screen
+				#kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image "$pape" #for Plasma6 SDDM lock screen
                 ;;
         esac
 
