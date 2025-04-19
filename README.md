@@ -24,9 +24,12 @@ Just working on adding support for Plasma 6 lockscreen.
 ### Usage
 ```
 USAGE: dynamicWallpaper -p [PAPER_PREFIX]
+NOTE: Default usage is to just update the Wallpaper
     -p: The prefix of your wallpaper folder without a trailing /
     -e: Embed a weather report into the middle of the background (OPTIONAL)
  --wal: Use pywal if it's installed (OPTIONAL)
+    -l: Just update Plasma 6 Lockscreen (OPTIONAL)
+    -a: Update both Wallpaper and Lockscreen (OPTIONAL)
 ```
 
 ### File Formatting
