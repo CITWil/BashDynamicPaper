@@ -29,7 +29,7 @@ get_weather () {
 
 get_time_chunk () {
     time_day=$(date +%-k%M)
-    
+
     echo "$sunrise ~ $time_day ~ $sunset"
 
     t_type="Day"
