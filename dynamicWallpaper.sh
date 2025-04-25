@@ -36,9 +36,9 @@ get_time_chunk () {
 
     if (( time_day < sunrise )); then
         t_type="Night"
-    elif (( time_day >= sunrise )) && (( time_day < sunrise + 130 )); then
+    elif (( time_day >= sunrise )) && (( time_day <= 1200 )); then
         t_type="Morning"
-    elif (( time_day < sunset - 130 )) && (( time_day > sunrise + 130 )); then
+    elif (( time_day < sunset - 130 )) && (( time_day > 1200 )); then
         t_type="Day"
     elif (( time_day > sunset - 100 )) && (( time_day < sunset )); then
         t_type="Evening"
@@ -50,7 +50,7 @@ get_time_chunk () {
 get_simple_weather () {
     echo "Temp: $temp"
 
-    if echo "$w_type" | grep -i -q -E "sun|sunny|clear" && (( temp >= 34 )); then
+    if echo "$w_type" | grep -i -q -E "sun|sunny|clear|partly" && (( temp >= 34 )); then
         w_type="Sun"
     elif echo "$w_type" | grep -q -i "snow" || ((temp < 34)); then
         w_type="Snow"
