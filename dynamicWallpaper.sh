@@ -77,17 +77,17 @@ set_pape () {
         fi
 
         echo "Res: $res"
-        magick convert "$pape" -resize "$res" resized_pape.png
+        magick "$pape" -resize "$res" resized_pape.png
         pape="resized_pape.png"
 		echo $pape
 
         rm embed_pape_*
-        magick convert <( curl -s "wttr.in/_tqp0.png" ) weather_report.png
-        magick convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "embed_pape.png"
+        magick <( curl -s "wttr.in/_tqp0.png" ) weather_report.png
+        magick "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "embed_pape.png"
         stamped_pape="embed_pape_$(date +%T).png"
         cp embed_pape.png "$stamped_pape"
-        magick convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% weather_report.png
-        magick convert "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "$stamped_pape"
+        magick <( curl -s "wttr.in/_tqp0.png" ) -resize 175% weather_report.png
+        magick "$pape" "weather_report.png" -gravity center -geometry +0+0 -composite "$stamped_pape"
         pape="$stamped_pape"
     fi
 
