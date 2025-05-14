@@ -19,7 +19,7 @@ get_weather () {
         sunrise=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunrise' | tr -d ":AM[:space:]" | sed 's/^0//')
         sunset=$(echo "$weatherdata" | jq -r '.weather[0].astronomy[0].sunset'| tr -d ":PM[:space:]" | sed 's/^0//')
         sunset=$((sunset + 1200))
-		magick convert <( curl -s "wttr.in/_tqp0.png" ) -resize 175% "$pape_prefix/weather/weather_report.png"
+		magick <( curl -s "wttr.in/_tqp0.png" ) -resize 175% "$pape_prefix/weather/weather_report.png"
     else
         echo "wttr.in failure, using previous weather."
         wttr_fail=1
